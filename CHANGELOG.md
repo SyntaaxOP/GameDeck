@@ -1,0 +1,81 @@
+# Changelog
+
+All notable changes are recorded here. This project follows [Semantic Versioning](https://semver.org/).
+
+## [0.8.0] - 2026-08-11
+
+### Added
+
+- Singleton local PC hardware profile with manual CPU, GPU, memory, motherboard, storage, and notes.
+- One-time read-only OS, processor, memory, and storage inventory snapshot with no background telemetry.
+
+## [0.7.0] - 2026-08-11
+
+### Added
+
+- Tauri 2 Windows shell with a tightly scoped FastAPI sidecar lifecycle and per-user local data.
+- PyInstaller sidecar script and reproducible NSIS packaging workflow.
+- Desktop-aware API routing, loopback CORS policy, and restrictive webview content-security policy.
+
+## [0.6.0] - 2026-08-11
+
+### Added
+
+- Preview-before-commit Steam owned-library import using Valve's official Web API.
+- Backend-only Steam API key configuration, duplicate app-ID protection, offline-safe failure handling, and explicit placeholder executables.
+
+## [0.5.0] - 2026-08-11
+
+### Added
+
+- Local game-night scheduling with optional library game, status, duration, notes, and attendee responses.
+- User-triggered, copyable Discord announcement generation without bot tokens or network transmission.
+
+## [0.4.0] - 2026-08-11
+
+### Added
+
+- Offline FiveM companion for manual server favorites, addresses, connect codes, notes, Discord links, last-joined history, and tracked playtime.
+- Case-insensitive address uniqueness and explicit destructive confirmation.
+
+## [0.3.0] - 2026-08-11
+
+### Added
+
+- Up to 10 explicit executable aliases per game, each with optional exact-path matching.
+- Alias editing in the game form and process-detection mappings on game details.
+- Normalized active executable registry with case-insensitive library-wide uniqueness.
+
+### Changed
+
+- Process matching now combines primary and alias processes into one game-level session.
+- Archiving releases all executable mappings, while restore reclaims them atomically.
+- Demo data includes safe alternate-executable examples.
+
+## [0.2.0] - 2026-08-11
+
+### Added
+
+- Local purchase ledger for base games, DLC, subscriptions, and other spending.
+- Separate-currency totals without implicit exchange-rate conversion.
+- Global and per-game cost-per-played-hour analytics.
+- Spending page with game filtering, add/edit flows, and explicit deletion confirmation.
+- Phase 9 privacy, failure-mode, and acceptance proposal.
+
+### Changed
+
+- Demo mode now includes deterministic, non-financial purchase records.
+- Diagnostics report purchase counts, and verified backups include the ledger.
+
+## [0.1.0] - 2026-08-11
+
+### Added
+
+- Local game library with search, filters, archiving, favorites, priorities, ratings, and lifecycle states.
+- Automatic Windows process monitoring with restart grace, crash recovery, and simultaneous-game support.
+- Auditable manual session creation, correction, deletion, and overlap protection.
+- Timezone-aware dashboard and analytics with clipped calendar intervals and rankings.
+- Actionable backlog and deterministic Play Next ordering.
+- SQLite migrations, verified online backups, diagnostics, rotating logs, and bounded lock handling.
+- Responsive React interface with loading, empty, error, keyboard, and reduced-motion states.
+- Deterministic sample-data command, Windows setup helpers, CI, screenshots, and release documentation.
