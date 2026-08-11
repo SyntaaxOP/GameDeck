@@ -1,0 +1,3 @@
+import{ApiError}from'@/api/games';import{apiUrl}from'@/lib/api-url';import type{PCProfile,PCProfileInput,PCSnapshot}from'@/types/pc'
+async function request<T>(path:string,init?:RequestInit){const r=await fetch(apiUrl(path),{...init,headers:init?.body?{'Content-Type':'application/json'}:undefined});if(!r.ok)throw new ApiError(`Request failed with status ${r.status}.`);return r.json()as Promise<T>}
+export const getPCProfile=(signal?:AbortSignal)=>request<PCProfile|null>('/api/v1/pc/profile',{signal});export const getPCSnapshot=(signal?:AbortSignal)=>request<PCSnapshot>('/api/v1/pc/snapshot',{signal});export const savePCProfile=(input:PCProfileInput)=>request<PCProfile>('/api/v1/pc/profile',{method:'PUT',body:JSON.stringify(input)})

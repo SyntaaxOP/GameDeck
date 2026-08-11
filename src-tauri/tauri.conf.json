@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "GameDeck",
+  "version": "0.8.0",
+  "identifier": "com.jeste.gamedeck",
+  "build": {
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../frontend/dist"
+  },
+  "app": {
+    "windows": [{ "title": "GameDeck", "width": 1440, "height": 920, "minWidth": 390, "minHeight": 640, "resizable": true }],
+    "security": { "csp": "default-src 'self'; connect-src 'self' http://127.0.0.1:8000; img-src 'self' data: http://127.0.0.1:8000; style-src 'self' 'unsafe-inline'; font-src 'self' data:" }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "externalBin": ["binaries/gamedeck-api"],
+    "windows": { "nsis": { "installMode": "currentUser" } }
+  }
+}
