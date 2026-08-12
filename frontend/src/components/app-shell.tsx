@@ -60,7 +60,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="absolute inset-x-5 bottom-5 rounded-lg border bg-background/60 p-3">
-          <p className="text-xs font-medium">Version 0.8.0</p>
+          <p className="text-xs font-medium">Version 0.8.1</p>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
             Complete local gaming workspace.
           </p>

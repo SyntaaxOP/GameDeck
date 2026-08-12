@@ -1,4 +1,6 @@
 use std::sync::Mutex;
+#[cfg(target_os = "windows")]
+use std::{os::windows::process::CommandExt, process::Command};
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
@@ -8,6 +10,23 @@ use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_shell::{process::CommandChild, ShellExt};
 
 struct Backend(Mutex<Option<CommandChild>>);
+
+#[cfg(target_os = "windows")]
+fn stop_stale_backend() {
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
+    let _ = Command::new("taskkill")
+        .args([
+            "/F",
+            "/T",
+            "/IM",
+            "gamedeck-api-x86_64-pc-windows-msvc.exe",
+        ])
+        .creation_flags(CREATE_NO_WINDOW)
+        .output();
+}
+
+#[cfg(not(target_os = "windows"))]
+fn stop_stale_backend() {}
 
 fn show_main_window(app: &AppHandle) {
     if let Some(window) = app.get_webview_window("main") {
@@ -36,6 +55,7 @@ fn main() {
             None,
         ))
         .setup(|app| {
+            stop_stale_backend();
             let (_events, child) = app.shell().sidecar("gamedeck-api")?.spawn()?;
             app.manage(Backend(Mutex::new(Some(child))));
 

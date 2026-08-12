@@ -1,8 +1,9 @@
 import ntpath
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, selectinload
 from gamedeck.models.game import Game
 from gamedeck.models.ignored_executable import IgnoredExecutable
+from gamedeck.models.game_session import GameSession
 from gamedeck.schemas.detection import DetectionReviewResponse, IgnoredExecutableListResponse, IgnoredExecutableResponse
 from gamedeck.schemas.game import GameResponse, GameUpdate
 from gamedeck.services.games import GameService, utc_now
@@ -31,6 +32,8 @@ class DetectionService:
             self.session.add(IgnoredExecutable(executable_name=game.executable_name.casefold(), executable_path=path, created_at=utc_now()))
             self.session.commit()
         GameService(self.session).archive(game_id)
+        self.session.execute(delete(GameSession).where(GameSession.game_id == game_id))
+        self.session.commit()
 
     def ignored(self) -> IgnoredExecutableListResponse:
         items = list(self.session.scalars(select(IgnoredExecutable).order_by(IgnoredExecutable.created_at.desc())))

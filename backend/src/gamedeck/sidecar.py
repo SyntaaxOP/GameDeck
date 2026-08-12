@@ -20,6 +20,7 @@ def main() -> None:
     import uvicorn
     config = Config(str(root / "alembic.ini"))
     command.upgrade(config, "head")
-    uvicorn.run("gamedeck.main:app", host="127.0.0.1", port=8000, workers=1, log_level="warning")
+    port = int(os.environ.get("GAMEDECK_PORT", "8000"))
+    uvicorn.run("gamedeck.main:app", host="127.0.0.1", port=port, workers=1, log_level="warning")
 
 if __name__ == "__main__": main()

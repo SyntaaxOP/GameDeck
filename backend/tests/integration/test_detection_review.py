@@ -12,6 +12,13 @@ def test_detection_review_confirm_and_ignore(api_client: TestClient) -> None:
     pending = api_client.get("/api/v1/detections").json()
     assert pending["total"] == 2
 
+    recorded = api_client.post("/api/v1/sessions", json={
+        "game_id": second.json()["id"],
+        "started_at": "2026-08-12T00:00:00Z",
+        "ended_at": "2026-08-12T01:00:00Z",
+    })
+    assert recorded.status_code == 201
+
     confirmed = api_client.post(f"/api/v1/detections/{first.json()['id']}/confirm", json={"title":"Real Game"})
     ignored = api_client.post(f"/api/v1/detections/{second.json()['id']}/ignore")
     assert confirmed.status_code == 200
@@ -21,6 +28,8 @@ def test_detection_review_confirm_and_ignore(api_client: TestClient) -> None:
     rules = api_client.get("/api/v1/detections/ignored").json()
     assert rules["total"] == 1
     assert rules["items"][0]["executable_name"] == "utility.exe"
+    sessions = api_client.get("/api/v1/sessions", params={"game_id": second.json()["id"]}).json()
+    assert sessions["total"] == 0
 
 def test_launcher_uses_steam_uri_and_stored_local_path(db_session, tmp_path: Path, monkeypatch) -> None:
     steam = GameService(db_session).create(GameCreate(title="Steam Game",platform="steam",executable_name="steam-app-42.exe",steam_app_id=42))
@@ -33,3 +42,9 @@ def test_launcher_uses_steam_uri_and_stored_local_path(db_session, tmp_path: Pat
     launcher.launch(steam.id); launcher.launch(local.id)
     assert uris == ["steam://run/42"]
     assert commands == [([str(executable)], str(executable.parent))]
+def test_packaged_api_contract_exposes_detection_routes(api_client: TestClient) -> None:
+    schema = api_client.get("/openapi.json")
+    assert schema.status_code == 200
+    paths = schema.json()["paths"]
+    assert "/api/v1/detections" in paths
+    assert "/api/v1/detections/ignored" in paths

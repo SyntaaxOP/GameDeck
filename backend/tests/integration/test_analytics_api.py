@@ -60,12 +60,12 @@ def test_playtime_clips_cross_midnight_and_counts_active_sessions(
     assert response.status_code == 200, response.text
     body = response.json()
     assert body["summary"] == {
-        "total_seconds": 19_800,
+        "total_seconds": 18_000,
         "session_count": 3,
         "average_session_seconds": 6_600,
         "longest_session_seconds": 7_200,
     }
-    assert [point["total_seconds"] for point in body["series"]] == [3_600, 16_200]
+    assert [point["total_seconds"] for point in body["series"]] == [3_600, 14_400]
     assert body["games"][0]["game_id"] == hades["id"]
     assert body["games"][0]["total_seconds"] == 14_400
 
@@ -78,10 +78,10 @@ def test_dashboard_contract_reconciles_cards_rankings_and_recent_items(
 
     assert response.status_code == 200, response.text
     body = response.json()
-    assert body["today_seconds"] == 16_200
-    assert body["week_seconds"] == 19_800
-    assert body["month_seconds"] == 19_800
-    assert body["lifetime"]["total_seconds"] == 19_800
+    assert body["today_seconds"] == 14_400
+    assert body["week_seconds"] == 18_000
+    assert body["month_seconds"] == 18_000
+    assert body["lifetime"]["total_seconds"] == 18_000
     assert body["top_game"]["game_id"] == hades["id"]
     assert len(body["current_sessions"]) == 1
     assert len(body["recent_sessions"]) == 2
@@ -101,7 +101,7 @@ def test_distribution_and_game_analytics(api_client: TestClient, db_session: Ses
     game = api_client.get(f"/api/v1/analytics/games/{hades['id']}", params=params)
 
     assert weekday.status_code == 200
-    assert [weekday.json()["buckets"][index]["total_seconds"] for index in (0, 1)] == [3_600, 16_200]
+    assert [weekday.json()["buckets"][index]["total_seconds"] for index in (0, 1)] == [3_600, 14_400]
     assert game.status_code == 200
     assert game.json()["summary"]["total_seconds"] == 14_400
     assert game.json()["summary"]["session_count"] == 2

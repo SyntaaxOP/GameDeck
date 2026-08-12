@@ -1,6 +1,6 @@
 [package]
 name = "gamedeck-desktop"
-version = "0.8.0"
+version = "0.8.1"
 description = "GameDeck local Windows desktop shell"
 edition = "2021"
 

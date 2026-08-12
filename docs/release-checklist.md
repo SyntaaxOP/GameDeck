@@ -2,7 +2,7 @@
 
 ## Code and data
 
-- [ ] Version is consistent in backend, frontend, changelog, desktop shell, and UI (`0.8.0`).
+- [ ] Version is consistent in backend, frontend, changelog, desktop shell, and UI (`0.8.1`).
 - [ ] Alembic upgrades an empty database to head and reports no pending operations.
 - [ ] Demo seed succeeds twice without duplicates or changes to existing records.
 - [ ] Backend, frontend, migration, lint, and production-build checks pass on Windows.
@@ -29,4 +29,4 @@
 - [ ] Five screenshots match the current release and contain demo-only data.
 - [ ] Demo script/video, architecture diagrams, decisions, limitations, and recovery guide are linked.
 - [ ] `CHANGELOG.md`, `LICENSE`, `CONTRIBUTING.md`, and `SECURITY.md` are present.
-- [ ] Windows CI is green and the release tag is `v0.8.0`.
+- [ ] Windows CI is green and the release tag is `v0.8.1`.
