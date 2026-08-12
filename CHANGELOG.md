@@ -2,6 +2,18 @@
 
 All notable changes are recorded here. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.8.3] - 2026-08-12
+
+### Changed
+
+- Replace cramped game-card actions with a balanced two-column Play, Details, Edit, and Delete layout.
+- Remove archive controls from the game library in favor of explicit permanent deletion.
+- Add a “Made by Syn” link to the author’s GitHub profile in the application footer.
+
+### Fixed
+
+- Exclude every GameDeck backend build and PyInstaller error window from automatic game discovery.
+
 ## [0.8.2] - 2026-08-12
 
 ### Added

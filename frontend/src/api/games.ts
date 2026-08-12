@@ -100,14 +100,6 @@ export function updateGame(gameId: number, input: GameUpdateInput): Promise<Game
   })
 }
 
-export function archiveGame(gameId: number): Promise<void> {
-  return request<void>(`/api/v1/games/${gameId}`, { method: 'DELETE' })
-}
-
-export function restoreGame(gameId: number): Promise<Game> {
-  return request<Game>(`/api/v1/games/${gameId}/restore`, { method: 'POST' })
-}
-
 export function deleteGamePermanently(gameId: number): Promise<void> {
   return request<void>(`/api/v1/games/${gameId}/permanent`, { method: 'DELETE' })
 }

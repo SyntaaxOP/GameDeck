@@ -147,9 +147,17 @@ def test_generic_candidate_rejects_screenshots_capture_tools_and_unrelated_apps(
         is_foreground=True,
         window_title="Drawing Tool",
     )
+    gamedeck_sidecar = ProcessInfo(
+        pid=15,
+        name="gamedeck-api-x86_64-pc-windows-msvc.exe",
+        executable_path=r"C:\Projects\GameDeck\src-tauri\binaries\gamedeck-api-x86_64-pc-windows-msvc.exe",
+        is_foreground=True,
+        window_title="Unhandled exception in script",
+    )
     assert is_probable_game_candidate(screenshot) is False
     assert is_probable_game_candidate(capture_tool) is False
     assert is_probable_game_candidate(unrelated) is False
+    assert is_probable_game_candidate(gamedeck_sidecar) is False
 
 
 def test_monitor_auto_imports_sustained_unknown_foreground_game(

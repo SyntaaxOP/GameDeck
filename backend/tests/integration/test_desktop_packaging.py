@@ -8,8 +8,8 @@ def test_tauri_configuration_is_scoped_to_bundled_backend():
     assert config['bundle']['externalBin']==['binaries/gamedeck-api']
     assert config['build']['beforeBuildCommand']=='pnpm --dir frontend build'
     assert config['build']['frontendDist']=='../frontend/dist'
-    assert config['version']=='0.8.2'
-    assert 'version = "0.8.2"' in (ROOT/'src-tauri'/'Cargo.toml').read_text()
+    assert config['version']=='0.8.3'
+    assert 'version = "0.8.3"' in (ROOT/'src-tauri'/'Cargo.toml').read_text()
     assert config['bundle']['windows']['nsis']['installMode']=='currentUser'
     assert config['bundle']['windows']['nsis']['installerHooks']=='./windows/hooks.nsh'
     hooks=(ROOT/'src-tauri'/'windows'/'hooks.nsh').read_text()

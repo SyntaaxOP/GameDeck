@@ -91,9 +91,13 @@ def is_probable_game_candidate(process: ProcessInfo) -> bool:
     name = PureWindowsPath(path).name.casefold()
     if not name.endswith(".exe") or name in EXCLUDED_EXECUTABLES:
         return False
+    if name.startswith("gamedeck-api") or name == "gamedeck-desktop.exe":
+        return False
     if name.startswith(("unins", "setup", "install", "update", "crashpad")):
         return False
     title = process.window_title.strip().casefold()
+    if title.startswith(("unhandled exception in script", "failed to execute script")):
+        return False
     if title.endswith(NON_GAME_TITLE_SUFFIXES):
         return False
     if "\\windows\\" in path or "\\windowsapps\\" in path or "\\appdata\\" in path:

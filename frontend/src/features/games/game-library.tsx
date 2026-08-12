@@ -1,7 +1,7 @@
 import { useDeferredValue, useEffect, useRef, useState } from 'react'
-import { ArchiveRestore, Plus, Search, Star } from 'lucide-react'
+import { LibraryBig, Plus, Search, Star } from 'lucide-react'
 
-import { archiveGame, deleteGamePermanently, listGames, restoreGame } from '@/api/games'
+import { deleteGamePermanently, listGames } from '@/api/games'
 import { getTrackerStatus } from '@/api/settings'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -35,7 +35,6 @@ export function GameLibrary() {
   const [platform, setPlatform] = useState<Platform | 'all'>('all')
   const [status, setStatus] = useState<LibraryStatus | 'all'>('all')
   const [favoriteOnly, setFavoriteOnly] = useState(false)
-  const [archived, setArchived] = useState(false)
   const [page, setPage] = useState(1)
   const [result, setResult] = useState<GameList | null>(null)
   const [loading, setLoading] = useState(true)
@@ -77,7 +76,7 @@ export function GameLibrary() {
         platform,
         status,
         favorite: favoriteOnly ? true : null,
-        archived,
+        archived: false,
         page,
         pageSize,
       },
@@ -95,7 +94,7 @@ export function GameLibrary() {
         if (!controller.signal.aborted) setLoading(false)
       })
     return () => controller.abort()
-  }, [archived, deferredQuery, favoriteOnly, page, platform, refreshKey, status])
+  }, [deferredQuery, favoriteOnly, page, platform, refreshKey, status])
 
   function refresh() {
     setRefreshKey((current) => current + 1)
@@ -147,7 +146,7 @@ export function GameLibrary() {
       </header>
 
       <Card>
-        <CardContent className="grid gap-3 p-4 md:grid-cols-[minmax(220px,1fr)_180px_190px_auto_auto]">
+        <CardContent className="grid gap-3 p-4 md:grid-cols-[minmax(220px,1fr)_180px_190px_auto]">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -175,9 +174,6 @@ export function GameLibrary() {
           <Button variant={favoriteOnly ? 'secondary' : 'outline'} onClick={() => resetPageAnd(() => setFavoriteOnly((current) => !current))} aria-pressed={favoriteOnly}>
             <Star className={favoriteOnly ? 'fill-current' : ''} aria-hidden="true" /> Favorites
           </Button>
-          <Button variant={archived ? 'secondary' : 'outline'} onClick={() => resetPageAnd(() => setArchived((current) => !current))} aria-pressed={archived}>
-            <ArchiveRestore aria-hidden="true" /> {archived ? 'Active' : 'Archived'}
-          </Button>
         </CardContent>
       </Card>
 
@@ -192,7 +188,7 @@ export function GameLibrary() {
 
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground">
-          {loading ? 'Loading library…' : `${result?.total ?? 0} ${archived ? 'archived' : 'active'} games`}
+          {loading ? 'Loading library…' : `${result?.total ?? 0} games`}
         </p>
         {result && result.total > pageSize ? <p className="text-xs text-muted-foreground">Page {page} of {totalPages}</p> : null}
       </div>
@@ -210,8 +206,6 @@ export function GameLibrary() {
               busy={busyGameId === game.id}
               running={runningGameIds.has(game.id)}
               onEdit={openEditDialog}
-              onArchive={(item) => void runGameMutation(item, archiveGame)}
-              onRestore={(item) => void runGameMutation(item, restoreGame)}
               onDelete={(item) => void runGameMutation(item, deleteGamePermanently)}
             />
           ))}
@@ -219,12 +213,12 @@ export function GameLibrary() {
       ) : (
         <Card className="border-dashed">
           <CardContent className="flex min-h-72 flex-col items-center justify-center text-center">
-            <div className="rounded-full bg-muted p-4"><ArchiveRestore className="size-6 text-muted-foreground" aria-hidden="true" /></div>
-            <h2 className="mt-4 text-lg font-medium">{archived ? 'No archived games' : 'Your library is ready'}</h2>
+            <div className="rounded-full bg-muted p-4"><LibraryBig className="size-6 text-muted-foreground" aria-hidden="true" /></div>
+            <h2 className="mt-4 text-lg font-medium">Your library is ready</h2>
             <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-              {archived ? 'Games you archive will remain safely available here.' : 'Add your first game and configure the executable GameDeck should recognize.'}
+              Add your first game and configure the executable GameDeck should recognize.
             </p>
-            {!archived ? <Button className="mt-5" onClick={openCreateDialog}><Plus aria-hidden="true" /> Add your first game</Button> : null}
+            <Button className="mt-5" onClick={openCreateDialog}><Plus aria-hidden="true" /> Add your first game</Button>
           </CardContent>
         </Card>
       )}

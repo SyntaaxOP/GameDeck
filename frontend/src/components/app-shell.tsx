@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { BarChart3, CalendarHeart, ChartNoAxesCombined, CircleDollarSign, CloudDownload, Cpu, Gamepad2, Library, ListTodo, Radio, ScanSearch, Settings } from 'lucide-react'
+import { BarChart3, CalendarHeart, ChartNoAxesCombined, CircleDollarSign, CloudDownload, Cpu, ExternalLink, Gamepad2, Library, ListTodo, Radio, ScanSearch, Settings } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 const navigation = [
@@ -60,14 +60,14 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="absolute inset-x-5 bottom-5 rounded-lg border bg-background/60 p-3">
-          <p className="text-xs font-medium">Version 0.8.1</p>
+          <p className="text-xs font-medium">Version 0.8.3</p>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
             Complete local gaming workspace.
           </p>
         </div>
       </aside>
 
-      <main id="main-content" tabIndex={-1} className="lg:pl-64">
+      <main id="main-content" tabIndex={-1} className="flex min-h-screen flex-col lg:pl-64">
         <div className="border-b bg-card/40 px-4 py-3 lg:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="flex items-center gap-2 font-semibold"><Gamepad2 className="size-5 text-primary" aria-hidden="true" /> GameDeck</span>
@@ -87,7 +87,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             </nav>
           </div>
         </div>
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">{children}</div>
+        <div className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-10">{children}</div>
+        <footer className="flex justify-end px-4 pb-4 sm:px-6 lg:px-8">
+          <a className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary" href="https://github.com/syntax-000" target="_blank" rel="noreferrer">Made by Syn <ExternalLink className="size-3.5" aria-hidden="true" /></a>
+        </footer>
       </main>
     </div>
   )

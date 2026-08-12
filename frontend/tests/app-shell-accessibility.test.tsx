@@ -9,6 +9,7 @@ describe('AppShell accessibility', () => {
     render(<MemoryRouter><AppShell><h1>Page content</h1></AppShell></MemoryRouter>)
 
     expect(screen.getByRole('link', { name: 'Skip to main content' })).toHaveAttribute('href', '#main-content')
+    expect(screen.getByRole('link', { name: 'Made by Syn' })).toHaveAttribute('href', 'https://github.com/syntax-000')
     expect(screen.getByRole('main')).toHaveAttribute('id', 'main-content')
     expect(screen.getByRole('main')).toHaveAttribute('tabindex', '-1')
   })
