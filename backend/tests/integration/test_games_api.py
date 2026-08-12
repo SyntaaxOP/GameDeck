@@ -233,6 +233,29 @@ def test_archive_hides_game_and_restore_returns_it(api_client: TestClient) -> No
     assert api_client.get("/api/v1/games").json()["total"] == 1
 
 
+def test_permanent_delete_removes_sessions_but_retains_unassigned_purchase(api_client: TestClient) -> None:
+    created = create_game(api_client)
+    session = api_client.post('/api/v1/sessions', json={
+        'game_id': created['id'],
+        'started_at': '2026-08-10T10:00:00Z',
+        'ended_at': '2026-08-10T11:00:00Z',
+    })
+    assert session.status_code == 201
+    purchase = api_client.post('/api/v1/purchases', json={
+        'game_id': created['id'], 'kind': 'base_game', 'amount_minor': 1000,
+        'currency_code': 'PHP', 'purchased_on': '2026-08-10',
+    })
+    assert purchase.status_code == 201
+
+    deleted = api_client.delete(f"/api/v1/games/{created['id']}/permanent")
+
+    assert deleted.status_code == 204
+    assert api_client.get(f"/api/v1/games/{created['id']}").status_code == 404
+    assert api_client.get('/api/v1/sessions').json()['total'] == 0
+    purchases = api_client.get('/api/v1/purchases').json()['items']
+    assert purchases[0]['game_id'] is None
+
+
 def test_restore_reports_executable_conflict(api_client: TestClient) -> None:
     original = create_game(api_client)
     api_client.delete(f"/api/v1/games/{original['id']}")

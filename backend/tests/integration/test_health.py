@@ -20,5 +20,5 @@ def test_health_reports_application_and_database_ready(tmp_path: Path) -> None:
     assert response.json() == {
         "status": "healthy",
         "database": "ready",
-        "version": "0.8.1",
+        "version": "0.8.2",
     }

@@ -4,6 +4,7 @@ export interface AppSettings {
   tracking_enabled: boolean
   week_starts_on: number
   time_zone: string
+  time_zone_auto: boolean
   theme: string
   currency_code: string
   updated_at: string
@@ -20,4 +21,4 @@ export interface TrackerStatus {
 }
 
 export type SettingsUpdate = Partial<Pick<AppSettings,
-  'scan_interval_seconds' | 'restart_grace_seconds' | 'tracking_enabled'>>
+  'scan_interval_seconds' | 'restart_grace_seconds' | 'tracking_enabled' | 'time_zone' | 'time_zone_auto'>>

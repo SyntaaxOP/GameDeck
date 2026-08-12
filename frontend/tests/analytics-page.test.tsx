@@ -28,6 +28,7 @@ describe('AnalyticsPage', () => {
     expect(await screen.findByText('Total playtime')).toBeInTheDocument()
     expect(screen.getByText('Top games')).toBeInTheDocument()
     expect(screen.getByText('Hades')).toBeInTheDocument()
+    expect(screen.getByText('Your gaming FAQ')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: '7 days' }))
     expect(await screen.findByRole('img', { name: 'Playtime over the last 7 days' })).toBeInTheDocument()
   })

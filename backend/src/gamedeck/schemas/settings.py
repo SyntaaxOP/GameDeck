@@ -12,6 +12,7 @@ class SettingsUpdate(BaseModel):
     tracking_enabled: bool | None = None
     week_starts_on: int | None = Field(default=None, ge=0, le=6)
     time_zone: str | None = Field(default=None, min_length=1, max_length=100)
+    time_zone_auto: bool | None = None
     theme: str | None = Field(default=None, pattern="^(dark|light|system)$")
     currency_code: str | None = Field(default=None, min_length=3, max_length=3)
 
@@ -38,6 +39,7 @@ class SettingsResponse(BaseModel):
     tracking_enabled: bool
     week_starts_on: int
     time_zone: str
+    time_zone_auto: bool
     theme: str
     currency_code: str
     updated_at: datetime

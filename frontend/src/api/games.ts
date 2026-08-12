@@ -108,6 +108,10 @@ export function restoreGame(gameId: number): Promise<Game> {
   return request<Game>(`/api/v1/games/${gameId}/restore`, { method: 'POST' })
 }
 
+export function deleteGamePermanently(gameId: number): Promise<void> {
+  return request<void>(`/api/v1/games/${gameId}/permanent`, { method: 'DELETE' })
+}
+
 export function launchGame(gameId: number): Promise<void> {
   return request<void>(`/api/v1/games/${gameId}/launch`, { method: 'POST' })
 }

@@ -1,7 +1,7 @@
 import { useDeferredValue, useEffect, useRef, useState } from 'react'
 import { ArchiveRestore, Plus, Search, Star } from 'lucide-react'
 
-import { archiveGame, listGames, restoreGame } from '@/api/games'
+import { archiveGame, deleteGamePermanently, listGames, restoreGame } from '@/api/games'
 import { getTrackerStatus } from '@/api/settings'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -212,6 +212,7 @@ export function GameLibrary() {
               onEdit={openEditDialog}
               onArchive={(item) => void runGameMutation(item, archiveGame)}
               onRestore={(item) => void runGameMutation(item, restoreGame)}
+              onDelete={(item) => void runGameMutation(item, deleteGamePermanently)}
             />
           ))}
         </div>

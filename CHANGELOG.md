@@ -2,6 +2,19 @@
 
 All notable changes are recorded here. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.8.2] - 2026-08-12
+
+### Added
+
+- Permanent library deletion with explicit history safeguards.
+- Rotating playtime FAQ insights and automatic or manual time-zone control.
+- Rich Windows hardware inventory with named CPU, GPU, motherboard, and total per-volume storage.
+
+### Fixed
+
+- Report notification permission and delivery results in the desktop UI.
+- Package the local backend without a visible command window.
+
 ## [0.8.1] - 2026-08-12
 
 ### Fixed

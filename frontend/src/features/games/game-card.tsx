@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Activity, Archive, Edit3, Play, RotateCcw, Star } from 'lucide-react'
+import { Activity, Archive, Edit3, Play, RotateCcw, Star, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import {
@@ -27,9 +27,10 @@ interface GameCardProps {
   onEdit: (game: Game) => void
   onArchive: (game: Game) => void
   onRestore: (game: Game) => void
+  onDelete: (game: Game) => void
 }
 
-export function GameCard({ game, busy, running, onEdit, onArchive, onRestore }: GameCardProps) {
+export function GameCard({ game, busy, running, onEdit, onArchive, onRestore, onDelete }: GameCardProps) {
   const [launching, setLaunching] = useState(false)
   const [launchError, setLaunchError] = useState<string | null>(null)
   const artworkVersion = game.cover_path?.split(/[\\/]/).pop()
@@ -85,9 +86,10 @@ export function GameCard({ game, busy, running, onEdit, onArchive, onRestore }: 
 
       <CardFooter className="justify-end gap-2 border-t bg-muted/15">
         {game.archived_at ? (
-          <Button variant="outline" size="sm" disabled={busy} onClick={() => onRestore(game)}>
-            <RotateCcw aria-hidden="true" /> Restore
-          </Button>
+          <>
+            <Button variant="outline" size="sm" disabled={busy} onClick={() => onRestore(game)}><RotateCcw aria-hidden="true" /> Restore</Button>
+            <DeleteGameDialog game={game} busy={busy} onDelete={onDelete} />
+          </>
         ) : (
           <>
             <Button size="sm" disabled={busy || launching} onClick={() => void launch()}>
@@ -118,10 +120,15 @@ export function GameCard({ game, busy, running, onEdit, onArchive, onRestore }: 
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+            <DeleteGameDialog game={game} busy={busy} onDelete={onDelete} />
           </>
         )}
       </CardFooter>
       {launchError ? <p role="alert" className="border-t px-6 py-2 text-xs text-destructive">{launchError}</p> : null}
     </Card>
   )
+}
+
+function DeleteGameDialog({ game, busy, onDelete }: { game: Game; busy: boolean; onDelete: (game: Game) => void }) {
+  return <AlertDialog><AlertDialogTrigger asChild><Button variant="ghost" size="sm" disabled={busy} className="text-destructive hover:text-destructive"><Trash2 aria-hidden="true" /> Delete</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Delete {game.title} permanently?</AlertDialogTitle><AlertDialogDescription>This removes the game and all of its play sessions. Purchase records and game nights remain, but become unassigned. This cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={() => onDelete(game)}>Delete permanently</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
 }

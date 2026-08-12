@@ -34,7 +34,7 @@ class Settings(Base):
     tracking_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("1"))
     week_starts_on: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
     time_zone: Mapped[str] = mapped_column(String(100), nullable=False, server_default="UTC")
+    time_zone_auto: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("1"))
     theme: Mapped[str] = mapped_column(String(10), nullable=False, server_default="dark")
     currency_code: Mapped[str] = mapped_column(String(3), nullable=False, server_default="PHP")
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-

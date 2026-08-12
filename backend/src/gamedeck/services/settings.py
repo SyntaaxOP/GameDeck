@@ -43,6 +43,7 @@ class SettingsService:
             tracking_enabled=settings.tracking_enabled,
             week_starts_on=settings.week_starts_on,
             time_zone=settings.time_zone,
+            time_zone_auto=settings.time_zone_auto,
             theme=settings.theme,
             currency_code=settings.currency_code,
             updated_at=settings.updated_at.replace(tzinfo=UTC),

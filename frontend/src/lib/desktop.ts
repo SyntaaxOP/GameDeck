@@ -1,11 +1,13 @@
 export const isDesktop = () => window.location.protocol === 'tauri:' || window.location.hostname === 'tauri.localhost'
 
-export async function notify(title: string, body: string): Promise<void> {
-  if (!isDesktop()) return
+export async function notify(title: string, body: string): Promise<'sent' | 'denied'> {
+  if (!isDesktop()) throw new Error('Notifications are available only in the installed desktop app.')
   const notifications = await import('@tauri-apps/plugin-notification')
   let granted = await notifications.isPermissionGranted()
   if (!granted) granted = (await notifications.requestPermission()) === 'granted'
-  if (granted) notifications.sendNotification({ title, body })
+  if (!granted) return 'denied'
+  await notifications.sendNotification({ title, body })
+  return 'sent'
 }
 
 export async function getAutostart(): Promise<boolean> {
