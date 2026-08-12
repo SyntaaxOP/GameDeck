@@ -6,12 +6,15 @@ def test_tauri_configuration_is_scoped_to_bundled_backend():
     config=json.loads((ROOT/'src-tauri'/'tauri.conf.json').read_text())
     capability=json.loads((ROOT/'src-tauri'/'capabilities'/'default.json').read_text())
     assert config['bundle']['externalBin']==['binaries/gamedeck-api']
-    assert config['build']['beforeBuildCommand']=='pnpm --dir frontend build'
+    assert config['build']['beforeBuildCommand']=='pnpm build'
     assert config['build']['frontendDist']=='../frontend/dist'
-    assert config['version']=='0.8.3'
-    assert 'version = "0.8.3"' in (ROOT/'src-tauri'/'Cargo.toml').read_text()
+    assert config['version']=='0.8.4'
+    assert 'version = "0.8.4"' in (ROOT/'src-tauri'/'Cargo.toml').read_text()
     assert config['bundle']['windows']['nsis']['installMode']=='currentUser'
     assert config['bundle']['windows']['nsis']['installerHooks']=='./windows/hooks.nsh'
+    desktop_main=(ROOT/'src-tauri'/'src'/'main.rs').read_text()
+    assert '#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]' in desktop_main
+    assert 'open_author_github' in desktop_main
     hooks=(ROOT/'src-tauri'/'windows'/'hooks.nsh').read_text()
     assert 'NSIS_HOOK_PREINSTALL' in hooks
     assert 'gamedeck-desktop.exe' in hooks

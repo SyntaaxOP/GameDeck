@@ -1,6 +1,9 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
+use std::process::Command;
 use std::sync::Mutex;
 #[cfg(target_os = "windows")]
-use std::{os::windows::process::CommandExt, process::Command};
+use std::os::windows::process::CommandExt;
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
@@ -28,6 +31,40 @@ fn stop_stale_backend() {
 #[cfg(not(target_os = "windows"))]
 fn stop_stale_backend() {}
 
+#[tauri::command]
+fn open_author_github() -> Result<(), String> {
+    const AUTHOR_URL: &str = "https://github.com/syntax-000";
+
+    #[cfg(target_os = "windows")]
+    {
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        Command::new("explorer.exe")
+            .arg(AUTHOR_URL)
+            .creation_flags(CREATE_NO_WINDOW)
+            .spawn()
+            .map(|_| ())
+            .map_err(|error| format!("Could not open the author profile: {error}"))
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        Command::new("open")
+            .arg(AUTHOR_URL)
+            .spawn()
+            .map(|_| ())
+            .map_err(|error| format!("Could not open the author profile: {error}"))
+    }
+
+    #[cfg(all(unix, not(target_os = "macos")))]
+    {
+        Command::new("xdg-open")
+            .arg(AUTHOR_URL)
+            .spawn()
+            .map(|_| ())
+            .map_err(|error| format!("Could not open the author profile: {error}"))
+    }
+}
+
 fn show_main_window(app: &AppHandle) {
     if let Some(window) = app.get_webview_window("main") {
         let _ = window.show();
@@ -48,6 +85,7 @@ fn stop_backend(app: &AppHandle) {
 
 fn main() {
     tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![open_author_github])
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_autostart::init(

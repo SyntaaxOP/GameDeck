@@ -2,6 +2,14 @@
 
 All notable changes are recorded here. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.8.4] - 2026-08-12
+
+### Fixed
+
+- Build the GameDeck desktop executable with the Windows GUI subsystem so launching it never opens a console window.
+- Open the author profile through a native desktop command instead of relying on WebView link navigation.
+- Run the Tauri frontend build hook from its actual frontend working directory.
+
 ## [0.8.3] - 2026-08-12
 
 ### Changed

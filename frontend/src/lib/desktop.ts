@@ -1,5 +1,15 @@
 export const isDesktop = () => window.location.protocol === 'tauri:' || window.location.hostname === 'tauri.localhost'
 
+export async function openAuthorGithub(): Promise<void> {
+  const url = 'https://github.com/syntax-000'
+  if (!isDesktop()) {
+    window.open(url, '_blank', 'noopener,noreferrer')
+    return
+  }
+  const { invoke } = await import('@tauri-apps/api/core')
+  await invoke('open_author_github')
+}
+
 export async function notify(title: string, body: string): Promise<'sent' | 'denied'> {
   if (!isDesktop()) throw new Error('Notifications are available only in the installed desktop app.')
   const notifications = await import('@tauri-apps/plugin-notification')
