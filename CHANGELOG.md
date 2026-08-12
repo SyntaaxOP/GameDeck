@@ -9,6 +9,8 @@ All notable changes are recorded here. This project follows [Semantic Versioning
 - Reject screenshot viewers, capture utilities, Windows Store apps, AppData tools, and unrelated foreground programs from launcher-independent game discovery.
 - Count overlapping games once in global analytics while retaining full per-game playtime.
 - Verify detection-review routes in the packaged backend contract and remove false-app sessions when an automatic detection is ignored.
+- Stop running GameDeck desktop and backend processes before Windows upgrades or uninstalls so NSIS can replace locked application files.
+- Run the frontend build from its explicit workspace directory during desktop packaging.
 
 ## [0.8.0] - 2026-08-11
 
