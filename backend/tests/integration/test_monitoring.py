@@ -125,6 +125,41 @@ def test_generic_candidate_requires_foreground_and_excludes_browser() -> None:
     assert is_probable_game_candidate(assistant) is False
 
 
+def test_generic_candidate_rejects_screenshots_capture_tools_and_unrelated_apps() -> None:
+    screenshot = ProcessInfo(
+        pid=12,
+        name="photos.exe",
+        executable_path=r"C:\Program Files\WindowsApps\Microsoft.Windows.Photos\Photos.exe",
+        is_foreground=True,
+        window_title="Screenshot 2026-08-12 060311.png",
+    )
+    capture_tool = ProcessInfo(
+        pid=13,
+        name="Medal.exe",
+        executable_path=r"C:\Users\player\AppData\Local\Medal\Medal.exe",
+        is_foreground=True,
+        window_title="Medal",
+    )
+    unrelated = ProcessInfo(
+        pid=14,
+        name="DrawingTool.exe",
+        executable_path=r"C:\Tools\DrawingTool.exe",
+        is_foreground=True,
+        window_title="Drawing Tool",
+    )
+    gamedeck_sidecar = ProcessInfo(
+        pid=15,
+        name="gamedeck-api-x86_64-pc-windows-msvc.exe",
+        executable_path=r"C:\Projects\GameDeck\src-tauri\binaries\gamedeck-api-x86_64-pc-windows-msvc.exe",
+        is_foreground=True,
+        window_title="Unhandled exception in script",
+    )
+    assert is_probable_game_candidate(screenshot) is False
+    assert is_probable_game_candidate(capture_tool) is False
+    assert is_probable_game_candidate(unrelated) is False
+    assert is_probable_game_candidate(gamedeck_sidecar) is False
+
+
 def test_monitor_auto_imports_sustained_unknown_foreground_game(
     migrated_database: tuple[Path, str], tmp_path: Path
 ) -> None:

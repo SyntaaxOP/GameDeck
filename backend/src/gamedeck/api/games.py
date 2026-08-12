@@ -89,6 +89,12 @@ def archive_game(game_id: int, session: DatabaseSession) -> Response:
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
+@router.delete("/{game_id}/permanent", status_code=status.HTTP_204_NO_CONTENT)
+def delete_game_permanently(game_id: int, session: DatabaseSession) -> Response:
+    GameService(session).delete_permanently(game_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 @router.post("/{game_id}/restore", response_model=GameResponse)
 def restore_game(game_id: int, session: DatabaseSession) -> GameResponse:
     return GameResponse.model_validate(GameService(session).restore(game_id))

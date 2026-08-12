@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from datetime import UTC, date, datetime
 from pathlib import PureWindowsPath
+from pathlib import Path
 
+from sqlalchemy import delete, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -15,6 +17,9 @@ from gamedeck.domain.errors import (
 )
 from gamedeck.models.game import Game
 from gamedeck.models.game_executable import GameExecutable
+from gamedeck.models.game_night import GameNight
+from gamedeck.models.game_session import GameSession
+from gamedeck.models.purchase import Purchase
 from gamedeck.repositories.games import GameRepository
 from gamedeck.schemas.game import (
     GameCreate,
@@ -159,6 +164,21 @@ class GameService:
             ) from exc
         self.session.refresh(game)
         return game
+
+    def delete_permanently(self, game_id: int) -> None:
+        game = self.get(game_id)
+        artwork = Path(game.cover_path) if game.cover_path else None
+        self.session.execute(delete(GameSession).where(GameSession.game_id == game_id))
+        self.session.execute(update(Purchase).where(Purchase.game_id == game_id).values(game_id=None))
+        self.session.execute(update(GameNight).where(GameNight.game_id == game_id).values(game_id=None))
+        self.session.delete(game)
+        self.session.commit()
+        if artwork is not None:
+            try:
+                if artwork.is_file() and artwork.parent.name.casefold() == "artwork":
+                    artwork.unlink()
+            except OSError:
+                pass
 
     def _create_mappings(
         self, game: Game, aliases: list[dict[str, object]], now: datetime

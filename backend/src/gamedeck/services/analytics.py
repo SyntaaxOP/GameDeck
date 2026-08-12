@@ -55,6 +55,28 @@ def clipped_seconds(session: GameSession, start: datetime, end: datetime, at: da
     return max(0, int((clipped_end - clipped_start).total_seconds()))
 
 
+def merged_seconds(sessions: list[GameSession], start: datetime, end: datetime, at: datetime) -> int:
+    """Count wall-clock gaming time once even when several games overlap."""
+    intervals: list[tuple[datetime, datetime]] = []
+    for item in sessions:
+        session_start = max(as_utc(item.started_at), start)
+        session_end = min(as_utc(item.ended_at) if item.ended_at is not None else at, end, at)
+        if session_end > session_start:
+            intervals.append((session_start, session_end))
+    if not intervals:
+        return 0
+    intervals.sort(key=lambda value: value[0])
+    total = 0
+    merged_start, merged_end = intervals[0]
+    for interval_start, interval_end in intervals[1:]:
+        if interval_start <= merged_end:
+            merged_end = max(merged_end, interval_end)
+            continue
+        total += int((merged_end - merged_start).total_seconds())
+        merged_start, merged_end = interval_start, interval_end
+    return total + int((merged_end - merged_start).total_seconds())
+
+
 class AnalyticsService:
     def __init__(self, session: Session) -> None:
         self.session = session
@@ -177,16 +199,16 @@ class AnalyticsService:
 
     def _summary(self, sessions: list[GameSession], start: datetime, end: datetime, at: datetime) -> AnalyticsSummary:
         durations = [value for item in sessions if (value := clipped_seconds(item, start, end, at)) > 0]
-        total = sum(durations)
+        total = merged_seconds(sessions, start, end, at)
         return AnalyticsSummary(
             total_seconds=total,
             session_count=len(durations),
-            average_session_seconds=round(total / len(durations)) if durations else 0,
+            average_session_seconds=round(sum(durations) / len(durations)) if durations else 0,
             longest_session_seconds=max(durations, default=0),
         )
 
     def _total(self, sessions: list[GameSession], start: datetime, end: datetime, at: datetime) -> int:
-        return sum(clipped_seconds(item, start, end, at) for item in sessions)
+        return merged_seconds(sessions, start, end, at)
 
     def _games(self, sessions: list[GameSession], start: datetime, end: datetime, at: datetime) -> list[GamePlaytime]:
         totals: dict[int, int] = defaultdict(int)

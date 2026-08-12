@@ -31,11 +31,13 @@ EXCLUDED_EXECUTABLES = {
     "msedge.exe",
     "msaccess.exe",
     "ms-teams.exe",
+    "medal.exe",
     "notepad.exe",
     "obs64.exe",
     "opera.exe",
     "outlook.exe",
     "powerpnt.exe",
+    "photos.exe",
     "powershell.exe",
     "pwsh.exe",
     "python.exe",
@@ -53,6 +55,29 @@ EXCLUDED_EXECUTABLES = {
     "zoom.exe",
 }
 
+NON_GAME_TITLE_SUFFIXES = (
+    ".bmp", ".doc", ".docx", ".gif", ".jpeg", ".jpg", ".mkv", ".mov",
+    ".mp3", ".mp4", ".pdf", ".png", ".ppt", ".pptx", ".svg", ".txt",
+    ".webm", ".webp", ".xls", ".xlsx",
+)
+
+GAME_PATH_MARKERS = (
+    "\\binaries\\",
+    "\\epic games\\",
+    "\\games\\",
+    "\\gog galaxy\\games\\",
+    "\\riot games\\",
+    "\\steamapps\\common\\",
+    "\\xboxgames\\",
+)
+
+GAME_EXECUTABLE_MARKERS = (
+    "-shipping.exe",
+    "_shipping.exe",
+    "-win64.exe",
+    "_win64.exe",
+)
+
 
 def normalize_executable_path(value: str) -> str:
     return ntpath.normcase(ntpath.normpath(value.strip().strip('"')))
@@ -66,11 +91,18 @@ def is_probable_game_candidate(process: ProcessInfo) -> bool:
     name = PureWindowsPath(path).name.casefold()
     if not name.endswith(".exe") or name in EXCLUDED_EXECUTABLES:
         return False
+    if name.startswith("gamedeck-api") or name == "gamedeck-desktop.exe":
+        return False
     if name.startswith(("unins", "setup", "install", "update", "crashpad")):
         return False
-    if "\\windows\\" in path or "\\appdata\\local\\temp\\" in path:
+    title = process.window_title.strip().casefold()
+    if title.startswith(("unhandled exception in script", "failed to execute script")):
         return False
-    return True
+    if title.endswith(NON_GAME_TITLE_SUFFIXES):
+        return False
+    if "\\windows\\" in path or "\\windowsapps\\" in path or "\\appdata\\" in path:
+        return False
+    return any(marker in path for marker in GAME_PATH_MARKERS) or name.endswith(GAME_EXECUTABLE_MARKERS)
 
 
 def candidate_title(process: ProcessInfo) -> str:

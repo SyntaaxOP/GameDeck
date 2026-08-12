@@ -19,6 +19,7 @@ const settings = {
   tracking_enabled: true,
   week_starts_on: 0,
   time_zone: 'UTC',
+  time_zone_auto: false,
   theme: 'dark',
   currency_code: 'PHP',
   updated_at: '2026-08-11T08:00:00Z',

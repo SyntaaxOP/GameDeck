@@ -17,7 +17,7 @@ vi.mock('@/api/steam', () => ({
   }),
   syncLocalSteamLibrary: vi.fn(),
 }))
-vi.mock('@/api/pc', () => ({ getPCProfile: vi.fn().mockResolvedValue(null), getPCSnapshot: vi.fn().mockResolvedValue({ operating_system: 'Windows 11', cpu_label: 'Test CPU', logical_cpu_count: 16, memory_gb: 32, storage_gb: 1000 }), savePCProfile: vi.fn() }))
+vi.mock('@/api/pc', () => ({ getPCProfile: vi.fn().mockResolvedValue(null), getPCSnapshot: vi.fn().mockResolvedValue({ operating_system: 'Windows 11', cpu_label: 'Test CPU', gpu_label: 'Test GPU', motherboard: 'Test Board', logical_cpu_count: 16, memory_gb: 32, total_storage_gb: 1500, storage_volumes: [{ name: 'C:', total_gb: 500 }, { name: 'D:', total_gb: 1000 }] }), savePCProfile: vi.fn() }))
 
 afterEach(() => cleanup())
 

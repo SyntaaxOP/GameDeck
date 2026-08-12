@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 
-import { archiveGame, listGames, restoreGame } from '@/api/games'
+import { deleteGamePermanently, listGames } from '@/api/games'
 import { GameLibrary } from '@/features/games/game-library'
 import type { Game } from '@/types/game'
 
@@ -12,10 +12,9 @@ vi.mock('@/api/settings', () => ({
 }))
 
 vi.mock('@/api/games', () => ({
-  archiveGame: vi.fn(),
   createGame: vi.fn(),
+  deleteGamePermanently: vi.fn(),
   listGames: vi.fn(),
-  restoreGame: vi.fn(),
   updateGame: vi.fn(),
 }))
 
@@ -40,27 +39,23 @@ const game: Game = {
 }
 
 const mockedListGames = vi.mocked(listGames)
-const mockedArchiveGame = vi.mocked(archiveGame)
-const mockedRestoreGame = vi.mocked(restoreGame)
+const mockedDeleteGame = vi.mocked(deleteGamePermanently)
 
 describe('GameLibrary', () => {
   beforeEach(() => {
     mockedListGames.mockReset()
-    mockedArchiveGame.mockReset()
-    mockedRestoreGame.mockReset()
+    mockedDeleteGame.mockReset()
     mockedListGames.mockResolvedValue({ items: [game], total: 1, page: 1, page_size: 12 })
-    mockedArchiveGame.mockResolvedValue()
+    mockedDeleteGame.mockResolvedValue()
   })
 
-  it('loads games and confirms archive without deleting history directly', async () => {
+  it('permanently deletes only after explicit confirmation', async () => {
     const user = userEvent.setup()
     render(<MemoryRouter><GameLibrary /></MemoryRouter>)
-
     expect(await screen.findByText('Hades')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Archive' }))
-    await user.click(screen.getByRole('button', { name: 'Archive game' }))
-
-    await waitFor(() => expect(mockedArchiveGame).toHaveBeenCalledWith(1))
+    await user.click(screen.getByRole('button', { name: 'Delete' }))
+    await user.click(screen.getByRole('button', { name: 'Delete permanently' }))
+    await waitFor(() => expect(mockedDeleteGame).toHaveBeenCalledWith(1))
   })
 
   it('shows a designed empty state', async () => {

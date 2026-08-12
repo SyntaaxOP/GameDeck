@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Activity, Bell, CheckCircle2, Database, FolderArchive, MonitorUp, Power, RefreshCw, Save, TriangleAlert } from 'lucide-react'
+import { Activity, Bell, CheckCircle2, Database, FolderArchive, Globe2, MonitorUp, Power, RefreshCw, Save, TriangleAlert } from 'lucide-react'
 
 import { getSettings, getTrackerStatus, updateSettings } from '@/api/settings'
 import { createBackup, getDiagnostics, listBackups } from '@/api/system'
@@ -27,7 +27,13 @@ export function SettingsPage() {
 
   useEffect(() => {
     const controller = new AbortController()
-    getSettings(controller.signal).then(setSettings).catch((caught: unknown) => {
+    getSettings(controller.signal).then(async (loaded) => {
+      const detected = Intl.DateTimeFormat().resolvedOptions().timeZone
+      if (loaded.time_zone_auto && detected && loaded.time_zone !== detected) {
+        const updated = await updateSettings({ time_zone: detected, time_zone_auto: true })
+        if (!controller.signal.aborted) setSettings(updated)
+      } else setSettings(loaded)
+    }).catch((caught: unknown) => {
       if (!(caught instanceof DOMException && caught.name === 'AbortError')) setError(caught instanceof Error ? caught.message : 'Unable to load settings.')
     })
     return () => controller.abort()
@@ -66,7 +72,7 @@ export function SettingsPage() {
     if (!settings) return
     setSaving(true); setError(null); setNotice(null)
     try {
-      setSettings(await updateSettings({ tracking_enabled: settings.tracking_enabled, scan_interval_seconds: settings.scan_interval_seconds, restart_grace_seconds: settings.restart_grace_seconds }))
+      setSettings(await updateSettings({ tracking_enabled: settings.tracking_enabled, scan_interval_seconds: settings.scan_interval_seconds, restart_grace_seconds: settings.restart_grace_seconds, time_zone: settings.time_zone, time_zone_auto: settings.time_zone_auto }))
       setTracker(await getTrackerStatus())
       setNotice('Tracking settings saved.')
     } catch (caught) {
@@ -111,6 +117,15 @@ export function SettingsPage() {
     }
   }
 
+  async function testNotification() {
+    setError(null); setNotice(null)
+    try {
+      const result = await notify('GameDeck notifications are ready', 'Newly detected games will appear here for review.')
+      if (result === 'denied') setError('Windows notification permission is denied. Enable GameDeck in Windows Settings → System → Notifications.')
+      else setNotice('Test notification sent. Check Windows Notification Center if the banner was hidden by Focus Assist.')
+    } catch (caught) { setError(caught instanceof Error ? caught.message : 'Unable to send the test notification.') }
+  }
+
   const reportedTrackerError = tracker?.last_error ?? trackerError
   return (
     <div className="space-y-7">
@@ -131,12 +146,20 @@ export function SettingsPage() {
           <CardContent className="space-y-4 text-sm"><StatusRow icon={reportedTrackerError ? TriangleAlert : CheckCircle2} label="Latest successful scan" value={tracker?.last_successful_scan_at ? new Date(tracker.last_successful_scan_at).toLocaleString() : 'Waiting for first scan'} /><StatusRow icon={Activity} label="Games detected" value={String(tracker?.active_game_ids.length ?? 0)} />{reportedTrackerError ? <div role="alert" className="space-y-2 rounded-md bg-destructive/10 p-3 text-destructive"><p className="font-medium">{reportedTrackerError}</p><p className="text-xs leading-relaxed">GameDeck is preserving active sessions. Check the log path below, then refresh; restart the single backend worker if successful scans do not resume.</p></div> : null}{tracker && !tracker.enabled ? <p className="rounded-md bg-muted p-3 text-muted-foreground">Tracking is paused. Existing open sessions are preserved until tracking resumes.</p> : null}<Button variant="outline" size="sm" onClick={() => void refreshTracker()}><RefreshCw aria-hidden="true" /> Refresh status</Button></CardContent>
         </Card>
       </div>
+      <Card>
+        <CardHeader><CardTitle className="flex items-center gap-2"><Globe2 className="size-5 text-primary" aria-hidden="true" /> Time zone</CardTitle><CardDescription>Analytics follows your detected local calendar, or a time zone you choose manually.</CardDescription></CardHeader>
+        <CardContent className="grid gap-4 sm:grid-cols-[auto_minmax(240px,1fr)_auto] sm:items-end">
+          <Button type="button" variant={settings?.time_zone_auto ? 'secondary' : 'outline'} aria-pressed={settings?.time_zone_auto ?? false} disabled={!settings} onClick={() => setSettings((current) => current ? { ...current, time_zone_auto: !current.time_zone_auto, time_zone: !current.time_zone_auto ? Intl.DateTimeFormat().resolvedOptions().timeZone : current.time_zone } : current)}><Globe2 aria-hidden="true" /> Automatic: {settings?.time_zone_auto ? 'On' : 'Off'}</Button>
+          <div className="space-y-2"><Label htmlFor="time-zone">IANA time zone</Label><Input id="time-zone" list="time-zone-options" value={settings?.time_zone ?? ''} disabled={!settings || settings.time_zone_auto} onChange={(event) => setSettings((current) => current ? { ...current, time_zone: event.target.value, time_zone_auto: false } : current)} /><datalist id="time-zone-options"><option value="Asia/Shanghai" /><option value="Asia/Manila" /><option value="America/New_York" /><option value="America/Chicago" /><option value="America/Denver" /><option value="America/Los_Angeles" /><option value="Europe/London" /><option value="Europe/Paris" /><option value="Australia/Sydney" /><option value="UTC" /></datalist></div>
+          <Button disabled={!settings || saving} onClick={() => void save()}><Save aria-hidden="true" /> Save time zone</Button>
+        </CardContent>
+      </Card>
       {desktop ? (
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2"><MonitorUp className="size-5 text-primary" aria-hidden="true" /> Desktop behavior</CardTitle><CardDescription>Keep detection available in the system tray and control Windows integration.</CardDescription></CardHeader>
           <CardContent className="flex flex-col gap-3 sm:flex-row">
             <Button variant="outline" disabled={autostartEnabled === null} aria-pressed={autostartEnabled ?? false} onClick={() => void toggleAutostart()}><Power aria-hidden="true" /> Start with Windows: {autostartEnabled ? 'On' : 'Off'}</Button>
-            <Button variant="outline" onClick={() => void notify('GameDeck notifications are ready', 'Newly detected games will appear here for review.')}><Bell aria-hidden="true" /> Test notification</Button>
+            <Button variant="outline" onClick={() => void testNotification()}><Bell aria-hidden="true" /> Test notification</Button>
           </CardContent>
         </Card>
       ) : null}

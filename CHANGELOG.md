@@ -2,6 +2,49 @@
 
 All notable changes are recorded here. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.8.4] - 2026-08-12
+
+### Fixed
+
+- Build the GameDeck desktop executable with the Windows GUI subsystem so launching it never opens a console window.
+- Open the author profile through a native desktop command instead of relying on WebView link navigation.
+- Run the Tauri frontend build hook from its actual frontend working directory.
+
+## [0.8.3] - 2026-08-12
+
+### Changed
+
+- Replace cramped game-card actions with a balanced two-column Play, Details, Edit, and Delete layout.
+- Remove archive controls from the game library in favor of explicit permanent deletion.
+- Add a “Made by Syn” link to the author’s GitHub profile in the application footer.
+
+### Fixed
+
+- Exclude every GameDeck backend build and PyInstaller error window from automatic game discovery.
+
+## [0.8.2] - 2026-08-12
+
+### Added
+
+- Permanent library deletion with explicit history safeguards.
+- Rotating playtime FAQ insights and automatic or manual time-zone control.
+- Rich Windows hardware inventory with named CPU, GPU, motherboard, and total per-volume storage.
+
+### Fixed
+
+- Report notification permission and delivery results in the desktop UI.
+- Package the local backend without a visible command window.
+
+## [0.8.1] - 2026-08-12
+
+### Fixed
+
+- Reject screenshot viewers, capture utilities, Windows Store apps, AppData tools, and unrelated foreground programs from launcher-independent game discovery.
+- Count overlapping games once in global analytics while retaining full per-game playtime.
+- Verify detection-review routes in the packaged backend contract and remove false-app sessions when an automatic detection is ignored.
+- Stop running GameDeck desktop and backend processes before Windows upgrades or uninstalls so NSIS can replace locked application files.
+- Run the frontend build from its explicit workspace directory during desktop packaging.
+
 ## [0.8.0] - 2026-08-11
 
 ### Added
